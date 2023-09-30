@@ -8,22 +8,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class cineDuarteDB : Migration
+    public partial class rokito : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Genero",
+                name: "Generos",
                 columns: table => new
                 {
                     GeneroId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(50)", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Genero", x => x.GeneroId);
+                    table.PrimaryKey("PK_Generos", x => x.GeneroId);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,7 +32,7 @@ namespace Infraestructure.Migrations
                 {
                     SalaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Capacidad = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -46,19 +46,19 @@ namespace Infraestructure.Migrations
                 {
                     PeliculaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Titulo = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    Sinopsis = table.Column<string>(type: "nvarchar(255)", nullable: false),
-                    Poster = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Trailer = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    GeneroId = table.Column<int>(type: "int", nullable: false)
+                    Titulo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Sinopsis = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Poster = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Trailer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Genero = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Peliculas", x => x.PeliculaId);
                     table.ForeignKey(
-                        name: "FK_Peliculas_Genero_GeneroId",
-                        column: x => x.GeneroId,
-                        principalTable: "Genero",
+                        name: "FK_Peliculas_Generos_Genero",
+                        column: x => x.Genero,
+                        principalTable: "Generos",
                         principalColumn: "GeneroId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -67,12 +67,12 @@ namespace Infraestructure.Migrations
                 name: "Funciones",
                 columns: table => new
                 {
+                    FuncionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PeliculaId = table.Column<int>(type: "int", nullable: false),
                     SalaId = table.Column<int>(type: "int", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Horario = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FuncionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                    Horario = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,24 +95,24 @@ namespace Infraestructure.Migrations
                 name: "Tickets",
                 columns: table => new
                 {
-                    funcionID = table.Column<int>(type: "int", nullable: false),
-                    Usuario = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     TicketId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FuncionId = table.Column<int>(type: "int", nullable: false),
+                    Usuario = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.TicketId);
                     table.ForeignKey(
-                        name: "FK_Tickets_Funciones_funcionID",
-                        column: x => x.funcionID,
+                        name: "FK_Tickets_Funciones_FuncionId",
+                        column: x => x.FuncionId,
                         principalTable: "Funciones",
                         principalColumn: "FuncionId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Genero",
+                table: "Generos",
                 columns: new[] { "GeneroId", "Nombre" },
                 values: new object[,]
                 {
@@ -140,11 +140,11 @@ namespace Infraestructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Peliculas",
-                columns: new[] { "PeliculaId", "GeneroId", "Poster", "Sinopsis", "Titulo", "Trailer" },
+                columns: new[] { "PeliculaId", "Genero", "Poster", "Sinopsis", "Titulo", "Trailer" },
                 values: new object[,]
                 {
                     { 1, 3, "https://th.bing.com/th/id/OIP.NNDzj9c4s1ntnvDOwTDNagHaLH?w=115&h=180&c=7&r=0&o=5&pid=1.7", "Jake Sully, ex-marine en Pandora, conoce a los Na'vi y se enamora de Neytiri. Enfrenta un dilema moral: ayudar en la extracción de un mineral o proteger a los Na'vi y su hogar.", "Avatar", "https://www.youtube.com/watch?v=AZS_d_hS2dM&ab_channel=20thCenturyStudiosEspa%C3%B1a" },
-                    { 2, 10, "https://th.bing.com/th/id/OIP.jn0LXyPMWtNfegmiSMhsZgHaKL?w=129&h=180&c=7&r=0&o=5&pid=1.7", "Rachel, periodista, investiga una cinta maldita tras la muerte de su sobrina. Tras verla, recibe una llamada que le da 7 días para salvar su vida y la de su hijo.", "El aro", "https://www.youtube.com/watch?v=3-1GGz_gTnQ&pp=ygUOZWwgYXJvIHRyYWlsZXI%3D&ab_channel=DigicineDistribuidora" },
+                    { 2, 10, "https://th.bing.com/th/id/OIP.jn0LXyPMWtNfegmiSMhsZgHaKL?w=129&h=180&c=7&r=0&o=5&pid=1.7", "Rachel, periodista, investiga una cinta maldita tras la muerte de su sobrina. Tras verla, recibe una llamada que le da 7 días para salvar su vida y la de su hijo.", "El aro", "https://www.youtube.com/watch?v=3-1GGz_gTnQ&ab_channel=DigicineDistribuidora" },
                     { 3, 2, "https://th.bing.com/th/id/OIP.8RmTep5x66mXiB7HiOqUUgHaLg?w=116&h=180&c=7&r=0&o=5&pid=1.7", "En la era Sengoku, un ronin llamado Nanashi protege a Kotarou y su perro Tobimaru de una organización china. Se embarcan en una peligrosa aventura en medio del conflicto de los Estados.", "The sword of the stranger", "https://tinyurl.com/3rdpbv3h" },
                     { 4, 9, "https://th.bing.com/th/id/OIP.wqhKWgCaUmC5LAWP0auNzQHaLP?w=178&h=271&c=7&r=0&o=5&pid=1.7", "Durante un trayecto del tren Orient-Express se produce un asesinato. Cuando una avalancha detiene el tren, el prestigioso detective Hércules Poirot sube al vehículo para investigar quién es el asesino, pero todos los pasajeros parecen sospechosos.", "Asesinato en el expreso de oriente", "https://www.youtube.com/watch?v=f8ne09GR8aE&ab_channel=20thCenturyStudiosEspa%C3%B1a" },
                     { 5, 7, "https://th.bing.com/th/id/OIP.sI0vbZwcYD1oEHt04j1vQwAAAA?w=115&h=180&c=7&r=0&o=5&pid=1.7", "Cuando Shrek y la princesa Fiona regresan de su luna de miel, los padres de ella los invitan a visitar el reino de Muy Muy Lejano para celebrar la boda. Para Shrek, al que nunca abandona su fiel amigo Asno, esto constituye un gran problema.", "Shrek 2", "https://www.youtube.com/watch?v=xBxVgh-kgAI&ab_channel=JoyasDeLaAnimaci%C3%B3n" },
@@ -156,7 +156,7 @@ namespace Infraestructure.Migrations
                     { 11, 6, "https://th.bing.com/th/id/OIP.IhQIQ8q8Bo9uhAWjgJoc0AHaK-?pid=ImgDet&rs=1", "Los años 20 nunca han estado mejor descritos que en esta romántica y suntuosa nueva versión del clásico de F. Scott Fitzgerald sobre la Era del Jazz.", "El gran Gatsby", "https://www.youtube.com/watch?v=tgx3mpSUwBA&ab_channel=WarnerBros.PicturesEspa%C3%B1a" },
                     { 12, 6, "https://th.bing.com/th/id/OIP.ZC32-wAQQGPVQ64Psduo2AHaLH?pid=ImgDet&rs=1", "Un bróker que disfruta de un estilo de vida decadente y desenfrenado trata de eludir al FBI mientras él y sus compañeros se hacen ricos gracias a unos negocios turbios.", "El lobo de wall street", "https://www.youtube.com/watch?v=DEMZSa0esCU&ab_channel=TrailersyEstrenos" },
                     { 13, 8, "https://tinyurl.com/yyuasf93", "Comedia animada que sigue las andanzas de un joven que realiza servicios comunitarios tras ser arrestado durante las fiestas de fin de año.", "8 noches de locura", "https://www.youtube.com/watch?v=q0Nsh8cb000&ab_channel=JaimeRodd" },
-                    { 14, 6, "https://th.bing.com/th/id/OIP.LjuYRh2pKrTATwL-Mou12gAAAA?pid=ImgDet&rs=1", "Jesse James planea su próximo gran robo pero su cabeza tiene precio por varios crímenes anteriores: quien capture a Jesse recibirá una gran recompensa. Varias personas le persiguen, incluso es traicionado por un miembro de su propia banda.", "El asesinato de jesse james por el cobarde robert ford", "https://www.youtube.com/watch?v=twadXH9PGgE&ab_channel=LeandroC" },
+                    { 14, 6, "https://th.bing.com/th/id/OIP.LjuYRh2pKrTATwL-Mou12gAAAA?pid=ImgDet&rs=1", "Jesse James planea su próximo gran robo pero su cabeza tiene precio por varios crímenes anteriores: quien capture a Jesse recibirá una gran recompensa. Varias personas le persiguen, incluso es traicionado por un miembro de su propia banda.", "El asesinato de jesse james", "https://www.youtube.com/watch?v=twadXH9PGgE&ab_channel=LeandroC" },
                     { 15, 6, "https://th.bing.com/th/id/OIP.M8qy4VxDSysV7wg_GscNEwHaKk?w=118&h=180&c=7&r=0&o=5&pid=1.7", "La película sigue a Kevin, quien tiene 23 personalidades debido a su trastorno de identidad disociativo. Secuestra a tres adolescentes y espera la aparición de su personalidad más temible, La Bestia.", "Fragmentado", "https://www.youtube.com/watch?v=3fQ82KWRRfo&ab_channel=CineHome" },
                     { 16, 2, "https://pics.filmaffinity.com/puss_in_boots_the_last_wish-897078202-mmed.jpg", "El Gato con Botas descubre que su pasión por la aventura le ha pasado factura: ha consumido ocho de sus nueve vidas, por ello emprende un viaje épico para encontrar el mítico Último Deseo y restaurar sus nueve vidas", "El gato con botas: El último deseo", "https://www.youtube.com/watch?v=QaiUm8jNiCk&ab_channel=UniversalSpain" },
                     { 17, 2, "https://pics.filmaffinity.com/lilo_stitch-502239805-mmed.jpg", "Lilo, una niña hawaiana solitaria, encuentra a Stitch, un experimento alienígena en la Tierra. A través del amor y la unión familiar de \"ohana,\" transforman sus vidas y enseñan el valor del cuidado y la amistad.", "Lilo & Stich", "https://www.youtube.com/watch?v=9OAC55UWAQs&ab_channel=RottenTomatoesClassicTrailers" },
@@ -176,14 +176,14 @@ namespace Infraestructure.Migrations
                 column: "SalaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Peliculas_GeneroId",
+                name: "IX_Peliculas_Genero",
                 table: "Peliculas",
-                column: "GeneroId");
+                column: "Genero");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_funcionID",
+                name: "IX_Tickets_FuncionId",
                 table: "Tickets",
-                column: "funcionID");
+                column: "FuncionId");
         }
 
         /// <inheritdoc />
@@ -202,7 +202,7 @@ namespace Infraestructure.Migrations
                 name: "Salas");
 
             migrationBuilder.DropTable(
-                name: "Genero");
+                name: "Generos");
         }
     }
 }

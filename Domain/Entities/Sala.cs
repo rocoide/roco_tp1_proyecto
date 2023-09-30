@@ -11,8 +11,6 @@ namespace Domain.Entities
     public class Sala
     {
         public int SalaId { get; set; }
-
-        [Column(TypeName = "nvarchar(50)")]
         public string Nombre { get; set; }
         public int Capacidad { get; set; }
 
